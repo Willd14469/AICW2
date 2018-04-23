@@ -1,7 +1,8 @@
 candidate_number(21988).
 
 solve_task(Task,Cost) :-
-  part_module(1) -> solve_task_1(Task, Cost).
+  (part_module(1) -> solve_task_1(Task, Cost);
+   part_module(3) -> solve_task_1(Task, Cost) ).
 
 
 solve_task_1(Task,Cost):-
@@ -77,3 +78,28 @@ achieved(find(O),Current,RPath,Cost,NewPos) :-
 
 search(F,N,N,1) :-
   map_adjacent(F,N,empty).
+
+
+tester(Num,Path) :-
+  Num = 1,
+  oracle_visitor(Num,Path),
+  oracle_visitor(Num+1,Path).
+
+visitall(2,P) :- oracle_visitor(2,P).
+visitall(N,P) :- oracle_visitor(N,P),visitall(N+1,P).
+
+oracle_visitor(N) :-
+  write("Computing path to: "),
+  write(N), nl,  
+  user:solve_task(find(o(N)),Path).
+
+dummy(1,X) :- X is 0.
+dummy(N,X) :- 
+  A is N - 1,
+  dummy(A,B),
+  X is B + N.
+
+gotoAll(3) :- oracle_visitor(3).
+gotoAll(ID) :- N2 is ID + 1,
+  oracle_visitor(ID), 
+  dummy2(N2).
