@@ -2,7 +2,7 @@ candidate_number(21988).
 
 solve_task(Task,Cost) :-
   (part_module(1) -> solve_task_1(Task, Cost);
-   part_module(3) -> solve_task_1(Task, Cost) ).
+   part_module(3) -> solve_task_3(Task, Cost) ).
 
 
 solve_task_1(Task,Cost):-
@@ -12,6 +12,13 @@ solve_task_1(Task,Cost):-
   solve_task_a_star(Task, [[c(FCost, 0, Position), Position]], ReversPath, Cost, _),!, % prune choice point for efficiency
   reverse(ReversPath,[_Init|Path]),
   query_world( agent_do_moves, [Agent,Path] ).
+
+solve_task_3(Task,Path):-
+  my_agent(Agent),
+  query_world( agent_current_position, [Agent,Position] ),
+  calc_f_value(Task, Position, 0, F),
+  solve_task_a_star(Task, [[c(FCost, 0, Position), Position]], ReversPath, Cost, _),!, % prune choice point for efficiency
+  reverse(ReversPath,[_Init|Path]).
 
 %% A* search 
 solve_task_a_star(Task,[Current|_],ReversPath,[cost(Cost),depth(Depth)],NewPos) :-
@@ -90,8 +97,20 @@ visitall(N,P) :- oracle_visitor(N,P),visitall(N+1,P).
 
 oracle_visitor(N) :-
   write("Computing path to: "),
-  write(N), nl,  
-  user:solve_task(find(o(N)),Path).
+  write(N), nl,
+  my_agent(Agent),
+  query_world(agent_current_energy,[Agent,Energy]),
+  write("Energy: "), write(Energy), nl,
+  (Energy < 60 -> user:solve_task(find(c(_)),PathToCharger),moveme(PathToCharger),topup(Agent,_), oracle_visitor(N);
+  otherwise -> user:solve_task(find(o(N)),Path), moveme(Path)).
+
+moveme(Path) :-
+  my_agent(Agent),
+  query_world( agent_do_moves, [Agent,Path] ).
+
+topup(Agent,ID) :-
+  query_world(agent_topup_energy,[Agent,c(ID)]).
+
 
 dummy(1,X) :- X is 0.
 dummy(N,X) :- 
@@ -99,7 +118,7 @@ dummy(N,X) :-
   dummy(A,B),
   X is B + N.
 
-gotoAll(3) :- oracle_visitor(3).
+gotoAll(10) :- oracle_visitor(10).
 gotoAll(ID) :- N2 is ID + 1,
   oracle_visitor(ID), 
-  dummy2(N2).
+  gotoAll(N2).
