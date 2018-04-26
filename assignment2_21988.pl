@@ -86,39 +86,39 @@ achieved(find(O),Current,RPath,Cost,NewPos) :-
 search(F,N,N,1) :-
   map_adjacent(F,N,empty).
 
+%% tester(Num,Path) :-
+%%   Num = 1,
+%%   oracle_visitor(Num,Path),
+%%   oracle_visitor(Num+1,Path).
 
-tester(Num,Path) :-
-  Num = 1,
-  oracle_visitor(Num,Path),
-  oracle_visitor(Num+1,Path).
+%% visitall(2,P) :- oracle_visitor(2,P).
+%% visitall(N,P) :- oracle_visitor(N,P),visitall(N+1,P).
 
-visitall(2,P) :- oracle_visitor(2,P).
-visitall(N,P) :- oracle_visitor(N,P),visitall(N+1,P).
+%% oracle_visitor(N) :-
+%%   write("Computing path to: "),
+%%   write(N), nl,
+%%   my_agent(Agent),
+%%   query_world(agent_current_energy,[Agent,Energy]),
+%%   write("Energy: "), write(Energy), nl,
+%%   (Energy < 60 -> user:solve_task(find(c(_)),PathToCharger),moveme(PathToCharger),topup(Agent,_), oracle_visitor(N);
+%%   otherwise -> user:solve_task(find(o(N)),Path), moveme(Path)).
 
-oracle_visitor(N) :-
-  write("Computing path to: "),
-  write(N), nl,
-  my_agent(Agent),
-  query_world(agent_current_energy,[Agent,Energy]),
-  write("Energy: "), write(Energy), nl,
-  (Energy < 60 -> user:solve_task(find(c(_)),PathToCharger),moveme(PathToCharger),topup(Agent,_), oracle_visitor(N);
-  otherwise -> user:solve_task(find(o(N)),Path), moveme(Path)).
+%% moveme(Path) :-
+%%   my_agent(Agent),
+%%   query_world( agent_do_moves, [Agent,Path] ).
 
-moveme(Path) :-
-  my_agent(Agent),
-  query_world( agent_do_moves, [Agent,Path] ).
-
-topup(Agent,ID) :-
-  query_world(agent_topup_energy,[Agent,c(ID)]).
+%% topup(Agent,ID) :-
+%%   query_world(agent_topup_energy,[Agent,c(ID)]).
 
 
-dummy(1,X) :- X is 0.
-dummy(N,X) :- 
-  A is N - 1,
-  dummy(A,B),
-  X is B + N.
+%% dummy(1,X) :- X is 0.
+%% dummy(N,X) :- 
+%%   A is N - 1,
+%%   dummy(A,B),
+%%   X is B + N.
 
-gotoAll(10) :- oracle_visitor(10).
-gotoAll(ID) :- N2 is ID + 1,
-  oracle_visitor(ID), 
-  gotoAll(N2).
+%% gotoAll(10) :- oracle_visitor(10).
+%% gotoAll(ID) :- N2 is ID + 1,
+%%   oracle_visitor(ID), 
+%%   gotoAll(N2).
+
