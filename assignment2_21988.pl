@@ -2,7 +2,8 @@ candidate_number(21988).
 
 solve_task(Task,Cost) :-
   (part_module(1) -> solve_task_1(Task, Cost);
-   part_module(3) -> solve_task_3(Task, Cost) ).
+   part_module(3) -> solve_task_3(Task, Cost);
+   part_module(4) -> solve_task_1(Task, Cost) ).
 
 
 solve_task_1(Task,Cost):-
@@ -29,6 +30,15 @@ solve_task_a_star(Task,Agenda,ReversPath,Cost,NewPos) :-
   find_children(Task, Current, Children),
   insert_many_in_agenda(Children, AgendaTail, NewAgenda),
   solve_task_a_star(Task, NewAgenda, ReversPath, Cost, NewPos).
+
+solve_task_a_star2(Task,[Current|_],ReversPath,[cost(Cost),depth(Depth)],NewPos) :-
+  multi_achieved(Task,Current,ReversPath,Cost,NewPos),
+  length(ReversPath,Depth).
+solve_task_a_star2(Task,Agenda,ReversPath,Cost,NewPos) :-
+  Agenda = [Current|AgendaTail], % Get current node
+  find_children(Task, Current, Children),
+  insert_many_in_agenda(Children, AgendaTail, NewAgenda),
+  solve_task_a_star2(Task, NewAgenda, ReversPath, Cost, NewPos).
 
 insert_many_in_agenda([], Agenda, Agenda).
 insert_many_in_agenda([Child|Children], Agenda, NewAgenda) :-
@@ -59,6 +69,12 @@ calc_f_value(go(TargetPos), Position, G, F) :-
   map_distance(Position, TargetPos, H),
   F is G + H.
 
+testachieved([find(O)],Current,RPath,Cost,NewPos) :-
+  Current = [c(_,Cost,NewPos)|RPath],
+  RPath = [Last|_],map_adjacent(Last,_,O1),
+  ( O=none    -> true
+  ; O=O1      -> true
+  ).
 
 %%%%%%%%%% Useful predicates %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% backtracking depth-first search, needs to be changed to agenda-based A*

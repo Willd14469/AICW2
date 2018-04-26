@@ -64,38 +64,6 @@ oracle_visitor(Oracle,Link):-
   writeln("asking question: "),
   ask_oracle(Oracle,Link).
 
-try(A):-
-  do_something(Oracles,Links),!.
-
-
-do_something( [] , [] ).
-do_something( [Oracle | OraclesRest ], Links ) :-
-    agent_position( Position ),
-    task_cost( find( o( Oracle ) ), Position, [cost(Cost1), depth(Depth1)], Path1, PositionEnd ),
-    task_cost( find( c( 1 ) ), PositionEnd, [cost(Cost2), depth(Depth2)], Path2, PositionEnd2 ),
-    check_energy( Energy ),
-    Energy > Cost1 + Cost2 + 10, %% fails here i think
-    agent_move( Path1 ),
-    ask_oracle( Oracle , Link ),
-    do_something( OraclesRest, LinksRest ),
-    Links = [ Link | LinksRest ].
-do_something( Oracles, Links ) :-
-    agent_position( Position ),
-    task_cost( find( c( 1 ) ), Position, cost(Cost3), Path3, PositionEnd3 ),
-    agent_move( Path3 ),
-    topup_energy( c( 1 ) ),
-    do_something( Oracles, Links ).
- 
-
-
-
-task_cost( Task, Position, Cost, Path, PositionEnd ):-
-  G is 0,
-  calculate_f( Task, Position, G, F ),
-  solve_task_a_star( Task, [ [ c( F, G, Position ), Position ] ], Path, Cost, PositionEnd ),
-  !.
- 
-
 get_energy(Energy):-
   my_agent(Agent),
   query_world(agent_current_energy,[Agent,Energy]).
